@@ -1,1 +1,29 @@
-<h2>Czas na serwerze to: {{time}}</h2>
+<mat-toolbar>
+  <mat-toolbar-row class="title">
+    Witaj na stronie obozu przetrwania
+  </mat-toolbar-row>
+  <mat-toolbar-row class="time">
+    <span>Czas na serwerze to: {{time}}</span>
+  </mat-toolbar-row>
+</mat-toolbar>
+<mat-card class="msg-card">
+
+  <mat-form-field class="form-field">
+    <mat-label>Autor</mat-label>
+    <input matInput [(ngModel)]="newMessage.author">
+  </mat-form-field>
+  <mat-form-field class="form-field wide">
+    <mat-label>Treść wiadomości</mat-label>
+    <textarea class="wide" matInput [(ngModel)]="newMessage.content"></textarea>
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="sendMessage()">Wyślij wiadomość</button>
+</mat-card>
+
+<mat-card *ngFor="let msg of messages" class="msg-card">
+  <mat-card-title>
+    <span class="author">Wiadomość od: {{msg.author}}</span>
+  </mat-card-title>
+  <mat-card-content>
+    {{msg.content}}
+  </mat-card-content>
+</mat-card>

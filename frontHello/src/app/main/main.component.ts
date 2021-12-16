@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MainService } from '../main.service';
+import { Message } from '../model';
 
 @Component({
   selector: 'app-main',
@@ -9,6 +10,8 @@ import { MainService } from '../main.service';
 export class MainComponent implements OnInit {
 
   time: string = '';
+  messages: Message[] = [];
+  newMessage: Message = {author: '', content: ''};
 
   constructor(
     private mainService: MainService
@@ -18,6 +21,15 @@ export class MainComponent implements OnInit {
     this.mainService.getTime().subscribe(res => {
       this.time = res;
     })
+    this.mainService.getMessages().subscribe(res => {
+      this.messages = res;
+    })
   }
 
+  sendMessage(): void {
+    this.mainService.postMessage(this.newMessage).subscribe(res => {
+      this.messages = res;
+      this.newMessage.content = '';
+    })
+  }
 }

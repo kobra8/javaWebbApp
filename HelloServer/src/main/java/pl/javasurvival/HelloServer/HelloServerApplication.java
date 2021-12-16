@@ -9,25 +9,36 @@ import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 public class HelloServerApplication {
+	private final List<Message> messages = new ArrayList<>();
+
+	private  HelloServerApplication() {
+		messages.add(new Message("Test content", "Zenek Tetstowy"));
+		messages.add(new Message("Bla bla", "Sebastian Tester"));
+	}
 
 	public static void main(String[] args) {
 		new HelloServerApplication().serve();
 	}
 	private void serve() {
-		RouterFunction route = route(GET("/api/time"),
-				getTime());
+		RouterFunction route = nest( path("/api"),
+				route(GET("/time"), renderTime())
+						.andRoute(GET("/messages"), renderMessages())
+						.andRoute(POST("/messages"), postMessage()));
 
 		HttpHandler httpHandler = RouterFunctions.toHttpHandler(route);
 
@@ -42,9 +53,26 @@ public class HelloServerApplication {
 		server.disposeNow();
 	}
 
-	private HandlerFunction<ServerResponse> getTime() {
+	private HandlerFunction<ServerResponse> postMessage() {
 		return request -> {
+			Mono<Message> postedMessage = request.bodyToMono(Message.class);
+			return postedMessage.flatMap(message -> {
+				messages.add(message);
+				return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+						.body(BodyInserters.fromValue(messages));
+			});
+		};
+	}
 
+	private HandlerFunction<ServerResponse> renderMessages() {
+		return request -> {
+			return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+					.body(BodyInserters.fromValue(messages));
+		};
+	}
+
+	private HandlerFunction<ServerResponse> renderTime() {
+		return request -> {
 			LocalDateTime now = LocalDateTime.now();
 			DateTimeFormatter myFormater = DateTimeFormatter.ofPattern("HH:mm:ss");
 			;

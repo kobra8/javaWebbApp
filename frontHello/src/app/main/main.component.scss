@@ -1,0 +1,21 @@
+.title {
+  font-size: 24px;
+}
+
+.time {
+  font-size: 16px;
+}
+
+.author{
+  margin-left: 1em;
+  font-weight: 700;
+}
+.msg-card {
+  margin: 5px 20px;
+}
+.form-field {
+  padding: 0 20px;
+  &.wide {
+    width: 500px;
+  }
+}
