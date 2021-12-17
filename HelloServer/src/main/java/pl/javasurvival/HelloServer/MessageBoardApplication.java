@@ -1,6 +1,7 @@
 package pl.javasurvival.HelloServer;
 
 
+import io.vavr.collection.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
@@ -15,24 +16,23 @@ import reactor.netty.http.server.HttpServer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Scanner;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
-public class HelloServerApplication {
-	private final List<Message> messages = new ArrayList<>();
+public class MessageBoardApplication {
+	private List<Message> messages = List.empty();
 
-	private  HelloServerApplication() {
-		messages.add(new Message("Test content", "Zenek Tetstowy"));
-		messages.add(new Message("Bla bla", "Sebastian Tester"));
+	private MessageBoardApplication() {
+		addMessage(new Message("Test content", "Zenek Tetstowy"));
+		addMessage(new Message("Bla bla", "Sebastian Tester"));
 	}
 
 	public static void main(String[] args) {
-		new HelloServerApplication().serve();
+		new MessageBoardApplication().serve();
 	}
 	private void serve() {
 		RouterFunction route = nest( path("/api"),
@@ -57,9 +57,9 @@ public class HelloServerApplication {
 		return request -> {
 			Mono<Message> postedMessage = request.bodyToMono(Message.class);
 			return postedMessage.flatMap(message -> {
-				messages.add(message);
+				addMessage(message);
 				return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-						.body(BodyInserters.fromValue(messages));
+						.body(BodyInserters.fromValue(messages.toJavaList()));
 			});
 		};
 	}
@@ -67,7 +67,7 @@ public class HelloServerApplication {
 	private HandlerFunction<ServerResponse> renderMessages() {
 		return request -> {
 			return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-					.body(BodyInserters.fromValue(messages));
+					.body(BodyInserters.fromValue(getMessages().toJavaList()));
 		};
 	}
 
@@ -80,4 +80,10 @@ public class HelloServerApplication {
 		};
 	}
 
+	private synchronized void addMessage(Message message) {
+		messages = messages.append(message);
+	}
+	private  synchronized List<Message> getMessages() {
+		return messages;
+	}
 }

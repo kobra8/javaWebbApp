@@ -9,13 +9,16 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
+	maven { url = 'https://repo.maven.apache.org/maven2' }
 	mavenCentral()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux:2.6.1'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
+	implementation 'io.vavr:vavr:1.0.0-alpha-4'
+	implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//	testImplementation 'io.projectreactor:reactor-test'
 }
 
 test {
