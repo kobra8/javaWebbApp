@@ -20,14 +20,14 @@ export class MainService {
     }));
   }
 
-  getMessages(): Observable<Message[]> {
-    return this.http.get('/api/messages/Java').pipe(map(response => {
+  getMessages(topicName: string): Observable<Message[]> {
+    return this.http.get(`/api/messages/${topicName}`).pipe(map(response => {
       return response as Message[];
     }));
   }
 
-  postMessage(message: Message): Observable<Message[]> {
-    return this.http.post('/api/messages/Java', message).pipe(map(response => {
+  postMessage(message: Message, topicName: string): Observable<Message[]> {
+    return this.http.post(`/api/messages/${topicName}`, message).pipe(map(response => {
       return response as Message[];
     }))
   }

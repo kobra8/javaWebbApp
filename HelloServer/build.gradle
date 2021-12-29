@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux:2.6.1'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.6.1'
 	implementation 'io.vavr:vavr:1.0.0-alpha-4'
 	implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 //	testImplementation 'org.springframework.boot:spring-boot-starter-test'
